@@ -9,4 +9,4 @@ You can see how to make clusters when you use famous clustering algorithms.
 ![demo](https://github.com/MiraiNiki/ClusteringViewer/blob/master/demo.gif)
 
 ## Usage
-You can see this app here. -> https://github.com/MiraiNiki/ClusteringViewer
+You can see this app here. -> http://m-clustering.appspot.com/
