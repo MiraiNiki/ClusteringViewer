@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>HTML5 TIPS</title>
+  <!--キャンバスの背景色／枠線を指定（3）-->
+  <style>
+    #cv {
+      background-color: #FFF;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <h1>clustering</h1>
+  <!--キャンバスの準備（1）-->
+  <canvas id="cv" width="800" height="600">
+    <!--Canvas機能に対応していないブラウザへの備え（2）-->
+    Canvas機能に対応したブラウザでアクセスしてください。
+
+  </canvas>
+
+  <form action="/" method="get">
+    <div><input type="button" id="ev1" value="restart"></div>
+    <div><input type="button" id="ev2" value="k-means"></div>
+  </form>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script>
+    var numberOfPoint = 120
+    var obj1 = document.getElementById("ev1");
+    var obj2 = document.getElementById("ev2");
+    var array = new Array(numberOfPoint);
+    for(let y = 0; y < numberOfPoint; y++) {
+      array[y] = new Array(2).fill(0);
+    }
+    obj1.addEventListener('click',
+      function() {
+        if (HTMLCanvasElement) {
+          　
+          var cv = document.querySelector('#cv');
+          var c = cv.getContext('2d');
+          c.clearRect(0,0,800,600);
+
+          for(i = 0; i < numberOfPoint; i++){
+      	// 中心（100, 150）、半径50の円を描画（1）
+      	var xMin = 0;
+      	var xMax = 800;
+      	var randx = Math.random() * (xMax - xMin) + xMin; // 0~400
+      	var yMin = 0;
+      	var yMax = 600;
+      	var randy = Math.random() * (yMax - yMin) + yMin; // 0~300
+      	array[i][0] = randx;
+      	array[i][1] = randy;
+
+      	c.beginPath();
+      	c.fillStyle = 'rgb(0, 0, 0)'; // 赤
+      	c.arc(randx, randy, 3, 0, 2 * Math.PI, false);
+      	c.fill();
+      	//c.stroke();
+      }
+      console.log(array);
+    }
+    
+  }
+  );
+
+    obj2.addEventListener('click',
+      function() {
+        if (HTMLCanvasElement) {
+          var data2 = {}
+    　 //Ajaxを使って表示させたままにする
+        //controllerにarrayをわたす
+        $.ajax({
+          url: '/getCluster',
+          type: "POST",
+          dataType: 'json',
+          data: JSON.stringify(array),
+          contentType: "application/json; charset=utf-8",
+
+        }).done(function(data1,textStatus,jqXHR) {
+
+				    // 4. オブジェクトをJSON形式の文字列に変換
+			      //data2 = JSON.stringify(data1);
+            //console.log(data1); //コンソールにJSON形式で表示される
+            var cv = document.querySelector('#cv');
+            var c = cv.getContext('2d');
+            var k = 0
+
+            function render(){
+              item = data1[k]
+              k = k + 1
+              c.clearRect(0,0,800,600);              
+              for (i = 0; i < item.length; i++){
+               c.beginPath();
+               if (item[i] == 1){
+                 c.fillStyle = 'rgb(192, 80, 77)';
+               }else if(item[i] == 2){
+                 c.fillStyle = 'rgb(155, 187, 89)';
+               }else{
+                 c.fillStyle = 'rgb(128, 100, 162)';
+               }
+               console.log(item);
+
+               c.arc(array[i][0], array[i][1], 3, 0, 2 * Math.PI, false);
+               c.fill();
+             }
+             if (k < data1.length){
+              setTimeout(render, 1000);
+             }
+            }
+            render();
+            console.log(array);
+
+		      // 6. failは、通信に失敗した時に実行される
+        }).fail(function(jqXHR, textStatus, errorThrown ) {
+         alert(data.name)
+       });
+
+      }
+    }
+    );
+
+
+  </script>
+</body>
+</html>
+
